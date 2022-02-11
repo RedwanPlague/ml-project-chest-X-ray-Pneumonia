@@ -1,5 +1,7 @@
 env
+.idea
 .vscode
+lightning_logs
 chest_xray
 miscellaneous
 dummy_data

@@ -1,0 +1,11 @@
+Conv 6 5 1 2
+ReLU
+MaxPool 2 2 0
+Conv 12 5 1 0
+ReLU
+MaxPool 2 2 0
+Conv 100 5 1 0
+ReLU
+GlobalMaxPool
+Flatten
+Softmax
