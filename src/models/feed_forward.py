@@ -1,12 +1,13 @@
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
-import pytorch_lightning as pl
+from pytorch_lightning import LightningModule
+from torchinfo import summary
 
 from utils.layers import make_activation_layer
 
 
-class FeedForward(pl.LightningModule):
+class FeedForward(LightningModule):
     def __init__(
         self,
         layer_sizes,
@@ -65,10 +66,15 @@ class FeedForward(pl.LightningModule):
 
 
 def main():
-    model = FeedForward([3072, 15, 10, 4])
-    x = torch.ones(32, 32, 32, 3)
-    y_pred = model(x)
-    print(y_pred.shape)
+    model = FeedForward([3072, 100, 10, 4])
+    print(model)
+    summary(model, input_size=(32, 3, 32, 32), col_names=(
+                # "input_size",
+                "output_size",
+                "kernel_size",
+                # "num_params",
+                # "mult_adds",
+            ))
 
 
 if __name__ == '__main__':

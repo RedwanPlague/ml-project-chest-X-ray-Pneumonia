@@ -1,7 +1,8 @@
 import torch
-import torch.nn as nn
+from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
+from torchinfo import summary
 
 from utils.layers import make_layer
 
@@ -59,11 +60,15 @@ class SequentialFCN(pl.LightningModule):
 
 
 def main():
-    x = torch.ones(32, 3, 32, 32)
     model = SequentialFCN('src/models/architecture.txt', 3)
     print(model)
-    y_pred = model(x)
-    print(y_pred.shape)
+    summary(model, input_size=(32, 3, 32, 32), col_names=(
+                # "input_size",
+                "output_size",
+                "kernel_size",
+                # "num_params",
+                # "mult_adds",
+            ))
 
 
 if __name__ == '__main__':
