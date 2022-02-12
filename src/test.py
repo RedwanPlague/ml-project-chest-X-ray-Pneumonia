@@ -5,12 +5,12 @@ import os
 
 
 dirs = [
-    'dummy_data/train/NORMAL',
-    'dummy_data/train/PNEUMONIA',
-    'dummy_data/val/NORMAL',
-    'dummy_data/val/PNEUMONIA',
-    'dummy_data/test/NORMAL',
-    'dummy_data/test/PNEUMONIA',
+    'chest_xray/train/NORMAL',
+    'chest_xray/train/PNEUMONIA',
+    'chest_xray/val/NORMAL',
+    'chest_xray/val/PNEUMONIA',
+    'chest_xray/test/NORMAL',
+    'chest_xray/test/PNEUMONIA',
 ]
 
 rgb_cnt, l_cnt = 0, 0
