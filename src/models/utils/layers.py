@@ -44,6 +44,9 @@ def make_layer(desc_line, prev_size):
 
     elif layer_name == 'flatten':
         return nn.Flatten(), prev_size
+    elif layer_name == 'fc':
+        output_size = int(desc[1])
+        return nn.Linear(prev_size, output_size), output_size
     elif layer_name == 'softmax':
         return nn.Softmax(dim=1), prev_size
     return make_activation_layer(layer_name), prev_size

@@ -8,4 +8,5 @@ Conv 100 5 1 0
 ReLU
 GlobalMaxPool
 Flatten
+FC 4
 Softmax
