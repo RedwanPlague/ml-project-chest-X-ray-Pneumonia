@@ -13,7 +13,7 @@ def make_activation_layer(activation_type='relu'):
     elif act_type == 'tanh':
         return nn.Tanh()
 
-    assert False, 'Invalid Layer'
+    assert False, 'Invalid Activation Layer'
 
 
 def make_layer(desc_line, prev_size):

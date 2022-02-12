@@ -11,7 +11,7 @@ class SequentialFCN(pl.LightningModule):
     def __init__(
         self,
         architecture_file,
-        input_size=3,
+        input_channel=3,
         learning_rate=1e-3,
         reg_lambda=1e-3
     ):
@@ -22,7 +22,7 @@ class SequentialFCN(pl.LightningModule):
         layers = []
         with open(architecture_file) as f:
             for line in f:
-                layer, input_size = make_layer(line, input_size)
+                layer, input_channel = make_layer(line, input_channel)
                 layers.append(layer)
         self.layers = nn.Sequential(*layers)
 
