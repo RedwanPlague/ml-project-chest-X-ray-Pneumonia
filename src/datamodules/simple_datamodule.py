@@ -9,24 +9,17 @@ from .utils.transforms import load_image_and_transform
 
 
 DIR = 'uniform_xray'
-NORM = 'normal'
-BACT = 'bacteria'
-VIRS = 'virus'
 WORKERS = 2
 
 
 def get_data(stage):
-    norm_dir = os.path.join(DIR, stage, NORM)
-    norm_list = [os.path.join(norm_dir, file) for file in os.listdir(norm_dir)]
-    bact_dir = os.path.join(DIR, stage, BACT)
-    bact_list = [os.path.join(bact_dir, file) for file in os.listdir(bact_dir)]
-    virs_dir = os.path.join(DIR, stage, VIRS)
-    virs_list = [os.path.join(virs_dir, file) for file in os.listdir(virs_dir)]
-
-    img_file_names = norm_list + bact_list + virs_list
-    labels = ([0] * len(norm_list)) + ([1] * len(bact_list)) + ([2] * len(virs_list))
-
-    return img_file_names, labels
+    img_names, labels = [], []
+    for i, cls in enumerate(('normal', 'bacteria', 'virus')):
+        ddir = os.path.join(DIR, stage, cls)
+        dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)[:10]]
+        img_names += dlist
+        labels += [i] * len(dlist)
+    return img_names, labels
 
 
 # def custom_collate(batch):
@@ -37,16 +30,16 @@ def get_data(stage):
 
 
 class CustomDataset(Dataset):
-    def __init__(self, img_file_names, labels):
+    def __init__(self, img_names, labels):
         super().__init__()
-        self.img_file_names = img_file_names
+        self.img_names = img_names
         self.y = F.one_hot(torch.tensor(labels)).float()
 
     def __len__(self):
         return len(self.y)
     
     def __getitem__(self, index):
-        return load_image_and_transform(self.img_file_names[index]), self.y[index]
+        return load_image_and_transform(self.img_names[index]), self.y[index]
 
 
 class SimpleDataModule(LightningDataModule):

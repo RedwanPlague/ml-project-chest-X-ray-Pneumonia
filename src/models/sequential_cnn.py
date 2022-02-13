@@ -3,8 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchinfo import summary
-from torchmetrics import Accuracy, MetricCollection
-from torchmetrics.classification.f_beta import F1Score
+from torchmetrics import Accuracy, F1Score, ConfusionMatrix, MetricCollection
 
 from .utils.layers import make_layer
 
@@ -28,48 +27,49 @@ class SequentialCNN(pl.LightningModule):
                 layers.append(layer)
         self.layers = nn.Sequential(*layers)
 
-        metrics = {
-            'Acc': Accuracy(),
-            'F1': F1Score(num_classes=3)
+        self.cross_entropy_loss = nn.CrossEntropyLoss()
+
+        show_metrics = {
+            'F1': F1Score(num_classes=3),
         }
-        self.train_metrics = MetricCollection(metrics, prefix='train')
-        self.val_metrics = MetricCollection(metrics, prefix='val')
-        self.test_metrics = MetricCollection(metrics, prefix='test')
+        hide_metrics = {
+            'Acc': Accuracy(num_classes=3),
+            # 'CnfM': ConfusionMatrix(num_classes=3)  # can't log
+        }
+        self.train_shows = MetricCollection(show_metrics, prefix='train')
+        self.val_shows = MetricCollection(show_metrics, prefix='val')
+        self.test_shows = MetricCollection(show_metrics, prefix='test')
+        self.train_hides = MetricCollection(hide_metrics, prefix='train')
+        self.val_hides = MetricCollection(hide_metrics, prefix='val')
+        self.test_hides = MetricCollection(hide_metrics, prefix='test')
 
     def forward(self, x):
         y = self.layers(x)
         return y
 
-    def training_step(self, batch, batch_idx):
+    def common_step(self, batch, batch_idx, stage):
         x, y = batch
         logits = self(x)
 
-        loss = F.cross_entropy(logits, y)
-        self.log('trainLoss', loss, prog_bar=False, on_epoch=True, on_step=False)
+        loss = self.cross_entropy_loss(logits, y)
+        self.log(f'{stage}Loss', loss, prog_bar=False, on_epoch=True, on_step=False)
 
-        metrics = self.train_metrics(logits, y.argmax(dim=-1))
-        self.log_dict(metrics, prog_bar=True, on_epoch=True, on_step=False)
+        labels = y.argmax(dim=-1)
+        sm = getattr(self, f'{stage}_shows')(logits, labels)
+        self.log_dict(sm, prog_bar=True, on_epoch=True, on_step=False)
+        hm = getattr(self, f'{stage}_hides')(logits, labels)
+        self.log_dict(hm, prog_bar=False, on_epoch=True, on_step=False)
+
         return loss
 
+    def training_step(self, batch, batch_idx):
+        return self.common_step(batch, batch_idx, 'train')
+
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-
-        loss = F.cross_entropy(logits, y)
-        self.log('valLoss', loss, prog_bar=True, on_epoch=True, on_step=False)
-
-        metrics = self.val_metrics(logits, y.argmax(dim=-1))
-        self.log_dict(metrics, prog_bar=True, on_epoch=True, on_step=False)
+        return self.common_step(batch, batch_idx, 'val')
 
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-
-        loss = F.cross_entropy(logits, y)
-        self.log('testLoss', loss, prog_bar=True, on_epoch=True, on_step=False)
-
-        metrics = self.test_metrics(logits, y.argmax(dim=-1))
-        self.log_dict(metrics, prog_bar=True, on_epoch=True, on_step=False)
+        return self.common_step(batch, batch_idx, 'test')
 
     def configure_optimizers(self):
         return torch.optim.Adam(
