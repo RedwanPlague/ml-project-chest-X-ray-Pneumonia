@@ -3,6 +3,7 @@ env
 .vscode
 **/__pycache__/
 lightning_logs
+archs
 chest_xray
 miscellaneous
 dummy_data

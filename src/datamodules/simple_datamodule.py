@@ -24,7 +24,7 @@ def get_data(stage):
     virs_list = [os.path.join(virs_dir, file) for file in os.listdir(virs_dir)]
 
     img_file_names = norm_list + bact_list + virs_list
-    labels = ([0] * len(norm_list)) + ([1] * len(bact_list)) + ([2] * len(virs_dir))
+    labels = ([0] * len(norm_list)) + ([1] * len(bact_list)) + ([2] * len(virs_list))
 
     return img_file_names, labels
 
