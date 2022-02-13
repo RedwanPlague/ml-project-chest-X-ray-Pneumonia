@@ -36,3 +36,7 @@ import shutil
 #     d[key] = float(d[key])
 # print(json.dumps(d, indent=4))
 
+from datamodules.simple_datamodule import get_data
+
+x, y = get_data('train')
+print(len(x), len(y))

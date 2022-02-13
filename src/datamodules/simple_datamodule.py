@@ -16,7 +16,7 @@ def get_data(stage):
     img_names, labels = [], []
     for i, cls in enumerate(('normal', 'bacteria', 'virus')):
         ddir = os.path.join(DIR, stage, cls)
-        dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)[:10]]
+        dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)]
         img_names += dlist
         labels += [i] * len(dlist)
     return img_names, labels
