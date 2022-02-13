@@ -4,14 +4,14 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchinfo import summary
 
-from utils.layers import make_layer
+from .utils.layers import make_layer
 
 
 class SequentialFCN(pl.LightningModule):
     def __init__(
         self,
-        architecture_file,
-        input_channel=3,
+        architecture_file='src/models/architecture.txt',
+        input_channel=1,
         learning_rate=1e-3,
         reg_lambda=1e-3
     ):
@@ -60,7 +60,7 @@ class SequentialFCN(pl.LightningModule):
 
 
 def main():
-    model = SequentialFCN('src/models/architecture.txt', 3)
+    model = SequentialFCN(input_channel=3)
     print(model)
     summary(model, input_size=(32, 3, 32, 32), col_names=(
                 # "input_size",
