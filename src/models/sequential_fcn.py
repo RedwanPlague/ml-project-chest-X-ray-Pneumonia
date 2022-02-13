@@ -3,6 +3,8 @@ from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchinfo import summary
+from torchmetrics import Accuracy, MetricCollection
+from torchmetrics.classification.f_beta import F1Score
 
 from .utils.layers import make_layer
 
@@ -26,30 +28,48 @@ class SequentialFCN(pl.LightningModule):
                 layers.append(layer)
         self.layers = nn.Sequential(*layers)
 
+        metrics = {
+            'Acc': Accuracy(),
+            'F1': F1Score(num_classes=3)
+        }
+        self.train_metrics = MetricCollection(metrics, prefix='train')
+        self.val_metrics = MetricCollection(metrics, prefix='val')
+        self.test_metrics = MetricCollection(metrics, prefix='test')
+
     def forward(self, x):
         y = self.layers(x)
         return y
 
     def training_step(self, batch, batch_idx):
-        x, y_act = batch
-        y_pred = self(x)
+        x, y = batch
+        logits = self(x)
 
-        loss = F.cross_entropy(y_act, y_pred)
+        loss = F.cross_entropy(logits, y)
+        self.log('trainLoss', loss, prog_bar=False)
+
+        metrics = self.train_metrics(logits, y.argmax(dim=-1))
+        self.log_dict(metrics, prog_bar=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y_act = batch
-        y_pred = self(x)
+        x, y = batch
+        logits = self(x)
 
-        loss = F.cross_entropy(y_act, y_pred)
-        return loss
+        loss = F.cross_entropy(logits, y)
+        self.log('valLoss', loss, prog_bar=True)
+
+        metrics = self.val_metrics(logits, y.argmax(dim=-1))
+        self.log_dict(metrics, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
-        x, y_act = batch
-        y_pred = self(x)
+        x, y = batch
+        logits = self(x)
 
-        loss = F.cross_entropy(y_act, y_pred)
-        return loss
+        loss = F.cross_entropy(logits, y)
+        self.log('testLoss', loss, prog_bar=True)
+
+        metrics = self.test_metrics(logits, y.argmax(dim=-1))
+        self.log_dict(metrics, prog_bar=True)
 
     def configure_optimizers(self):
         return torch.optim.Adam(

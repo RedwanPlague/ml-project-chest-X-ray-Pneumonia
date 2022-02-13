@@ -6,4 +6,5 @@ lightning_logs
 chest_xray
 miscellaneous
 dummy_data
+uniform_xray
 setup.sh
