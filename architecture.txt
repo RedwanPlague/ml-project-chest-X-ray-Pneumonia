@@ -1,31 +1,19 @@
-Conv 2 5 1 2
+Conv 2 10 1 0
 ReLU
-MaxPool 2 2 0
-Conv 4 5 1 2
+MaxPool 5 2 0
+Conv 4 10 1 0
 ReLU
-MaxPool 2 2 0
-Conv 8 5 1 2
+MaxPool 5 2 0
+Conv 8 10 1 0
 ReLU
-MaxPool 2 2 0
-Conv 16 5 1 2
+MaxPool 5 2 0
+Conv 16 10 1 0
 ReLU
-MaxPool 2 2 0
-Conv 32 5 1 2
+MaxPool 5 2 0
+Conv 32 10 1 0
 ReLU
-MaxPool 2 2 0
-Conv 64 5 1 2
-ReLU
-MaxPool 2 2 0
-Conv 128 5 1 2
-ReLU
-MaxPool 2 2 0
-Conv 256 5 1 2
-ReLU
-MaxPool 2 2 0
-GlobalMaxPool
+MaxPool 5 2 0
 Flatten
 FC 64
-ReLU
-FC 16
 ReLU
 FC 3

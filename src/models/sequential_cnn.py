@@ -1,9 +1,8 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
 from torchinfo import summary
-from torchmetrics import Accuracy, F1Score, ConfusionMatrix, MetricCollection
+import torchmetrics as tm
 
 from .utils.layers import make_layer
 
@@ -12,7 +11,7 @@ class SequentialCNN(pl.LightningModule):
     def __init__(
         self,
         architecture_file='architecture.txt',
-        input_channel=1,
+        input_shape=(1, 1000, 700),
         learning_rate=1e-3,
         reg_lambda=1e-3
     ):
@@ -23,25 +22,27 @@ class SequentialCNN(pl.LightningModule):
         layers = []
         with open(architecture_file) as f:
             for line in f:
-                layer, input_channel = make_layer(line, input_channel)
+                layer, input_shape = make_layer(line, input_shape)
                 layers.append(layer)
         self.layers = nn.Sequential(*layers)
 
         self.cross_entropy_loss = nn.CrossEntropyLoss()
 
         show_metrics = {
-            'F1': F1Score(num_classes=3),
+            'F1': tm.F1Score(num_classes=3),
         }
         hide_metrics = {
-            'Acc': Accuracy(num_classes=3),
-            # 'CnfM': ConfusionMatrix(num_classes=3)  # can't log
+            'Acc': tm.Accuracy(num_classes=3),
+            'Precision': tm.Precision(num_classes=3),
+            'Recall': tm.Recall(num_classes=3),
+            # 'CnfMat': tm.ConfusionMatrix(num_classes=3)  # can't log
         }
-        self.train_shows = MetricCollection(show_metrics, prefix='train')
-        self.val_shows = MetricCollection(show_metrics, prefix='val')
-        self.test_shows = MetricCollection(show_metrics, prefix='test')
-        self.train_hides = MetricCollection(hide_metrics, prefix='train')
-        self.val_hides = MetricCollection(hide_metrics, prefix='val')
-        self.test_hides = MetricCollection(hide_metrics, prefix='test')
+        self.train_shows = tm.MetricCollection(show_metrics, prefix='train')
+        self.val_shows = tm.MetricCollection(show_metrics, prefix='val')
+        self.test_shows = tm.MetricCollection(show_metrics, prefix='test')
+        self.train_hides = tm.MetricCollection(hide_metrics, prefix='train')
+        self.val_hides = tm.MetricCollection(hide_metrics, prefix='val')
+        self.test_hides = tm.MetricCollection(hide_metrics, prefix='test')
 
     def forward(self, x):
         y = self.layers(x)
@@ -80,7 +81,7 @@ class SequentialCNN(pl.LightningModule):
 
 
 def main():
-    model = SequentialCNN(input_channel=3)
+    model = SequentialCNN(input_shape=(3, 32, 32))
     print(model)
     summary(model, input_size=(32, 3, 32, 32), col_names=(
                 # "input_size",

@@ -44,8 +44,9 @@ for cls in ('normal', 'bacteria', 'virus'):
     train, val, test = all[:a], all[a:b], all[b:]
     print(len(train), len(val), len(test))
 
-    h, w = 700, 1000
-    new_dir = f'uniform_xray/train/{cls}'
+    ddir = 'xray-299'
+    h, w = 299, 299
+    new_dir = f'{ddir}/train/{cls}'
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
     for img_path, img_name in train:
@@ -54,7 +55,7 @@ for cls in ('normal', 'bacteria', 'virus'):
         img = resize(img)
         img.save(f'{new_dir}/{img_name}')
 
-    new_dir = f'uniform_xray/val/{cls}'
+    new_dir = f'{ddir}/val/{cls}'
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
     for img_path, img_name in val:
@@ -63,7 +64,7 @@ for cls in ('normal', 'bacteria', 'virus'):
         img = resize(img)
         img.save(f'{new_dir}/{img_name}')
 
-    new_dir = f'uniform_xray/test/{cls}'
+    new_dir = f'{ddir}/test/{cls}'
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
     for img_path, img_name in test:
