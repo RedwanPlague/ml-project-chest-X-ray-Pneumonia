@@ -6,30 +6,37 @@ import os
 import shutil
 
 from models.sequential_cnn import SequentialCNN
+from models.transferer import Transferer
 from datamodules.simple_datamodule import SimpleDataModule
 
 
 with open('parameters.json') as f:
     params = json.load(f)
 
-model = SequentialCNN(
-    architecture_file=params['archi_file'],
-    input_shape=(1, 1000, 700),
+c, h, w = 3, 299, 299
+
+# model = SequentialCNN(
+#     architecture_file=params['archi_file'],
+#     input_shape=(c, w, h),
+#     learning_rate=params['learning_rate'],
+#     reg_lambda=params['lambda']
+# )
+model = Transferer(
     learning_rate=params['learning_rate'],
     reg_lambda=params['lambda']
 )
 print(model)
 summary(
     model,
-    input_size=(params['batch_size'], 1, 1000, 700),
-    col_names=("output_size", "kernel_size",)
+    input_size=(params['batch_size'], c, w, h),
+    col_names=("input_size", "output_size", "kernel_size",)
 )
 
 dm = SimpleDataModule(batch_size=params['batch_size'])
 
 trainer = Trainer(
     max_epochs=params['max_epochs'],
-    # gpus=-1,
+    gpus=-1,
     benchmark=True,
 )
 
@@ -42,16 +49,31 @@ print(json.dumps(metrics, indent=4))
 
 version = trainer.logger.version
 
+model_dir = 'saved_models'
+if not os.path.isdir(model_dir):
+    os.makedirs(model_dir)
+model_save_file = os.path.join(model_dir, f'model_v{version}.ckpt')
+trainer.save_checkpoint(model_save_file)
+
 archi_dir = 'archs'
 if not os.path.isdir(archi_dir):
     os.makedirs(archi_dir)
-shutil.copy(params['archi_file'], os.path.join(archi_dir, f'arch_v{version}.txt'))
+archi_save_file = os.path.join(archi_dir, f'arch_v{version}.txt')
+with open(archi_save_file, 'w') as f:
+    print(model, file=f)
 
 del params['archi_file']
 
 data_size = len(dm.train_data)
 
-log = {'version': version, 'data_size': data_size, **params, **metrics}
+log = {
+    'version': version,
+    'data_size': data_size,
+    'h': h,
+    'w': w,
+    **params,
+    **metrics
+}
 log_file = 'logs.csv'
 
 if not os.path.isfile(log_file):

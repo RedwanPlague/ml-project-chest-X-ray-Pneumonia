@@ -8,6 +8,7 @@ from torchmetrics.classification.f_beta import F1Score
 import torch.nn.functional as F
 import json
 import shutil
+from torchinfo import summary
 
 # pred = torch.FloatTensor([
 #     [-10, -2, -3],
@@ -36,7 +37,22 @@ import shutil
 #     d[key] = float(d[key])
 # print(json.dumps(d, indent=4))
 
-from datamodules.simple_datamodule import get_data
+# from datamodules.simple_datamodule import get_data
 
-x, y = get_data('train')
-print(len(x), len(y))
+# x, y = get_data('train')
+# print(len(x), len(y))
+
+import torchvision.models as models
+
+model = models.inception_v3(pretrained=True)
+for param in model.parameters():
+    param.requires_grad = False
+
+print(model)
+summary(model, input_size=(32, 3, 299, 299), col_names=(
+            "input_size",
+            "output_size",
+            "kernel_size",
+            # "num_params",
+            # "mult_adds",
+        ))

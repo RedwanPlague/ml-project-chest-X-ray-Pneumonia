@@ -8,7 +8,7 @@ from torch.utils.data.dataloader import DataLoader
 from .utils.transforms import load_image_and_transform
 
 
-DIR = 'uniform_xray'
+DIR = 'xray_299'
 WORKERS = 2
 
 
@@ -16,7 +16,7 @@ def get_data(stage):
     img_names, labels = [], []
     for i, cls in enumerate(('normal', 'bacteria', 'virus')):
         ddir = os.path.join(DIR, stage, cls)
-        dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)]
+        dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)[:256]]
         img_names += dlist
         labels += [i] * len(dlist)
     return img_names, labels

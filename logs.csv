@@ -1,2 +1,3 @@
-version,data_size,batch_size,max_epochs,learning_rate,lambda
-6,4684,64,10,0.001,0.001
+version,data_size,h,w,batch_size,max_epochs,learning_rate,lambda,valLoss,valF1,valAcc,valPrecision,valRecall,trainLoss,trainF1,trainAcc,trainPrecision,trainRecall
+16,768,299,299,128,10,0.001,0.001,0.79663,0.61812,0.61812,0.61812,0.61812,0.51044,0.78516,0.78516,0.78516,0.78516
+17,768,299,299,128,10,0.0005,0.001,0.72569,0.66252,0.66252,0.66252,0.66252,0.53016,0.77474,0.77474,0.77474,0.77474

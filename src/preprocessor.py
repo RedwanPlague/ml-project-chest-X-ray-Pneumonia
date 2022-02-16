@@ -44,8 +44,8 @@ for cls in ('normal', 'bacteria', 'virus'):
     train, val, test = all[:a], all[a:b], all[b:]
     print(len(train), len(val), len(test))
 
-    ddir = 'xray-299'
-    h, w = 299, 299
+    ddir = 'xray-300-420'
+    h, w = 300, 420
     new_dir = f'{ddir}/train/{cls}'
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)

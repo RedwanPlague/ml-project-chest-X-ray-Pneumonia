@@ -1,19 +1,2 @@
-Conv 2 10 1 0
-ReLU
-MaxPool 5 2 0
-Conv 4 10 1 0
-ReLU
-MaxPool 5 2 0
-Conv 8 10 1 0
-ReLU
-MaxPool 5 2 0
-Conv 16 10 1 0
-ReLU
-MaxPool 5 2 0
-Conv 32 10 1 0
-ReLU
-MaxPool 5 2 0
-Flatten
-FC 64
-ReLU
+resnet50
 FC 3
