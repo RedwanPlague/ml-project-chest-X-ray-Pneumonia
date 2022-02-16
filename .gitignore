@@ -12,3 +12,4 @@ uniform_xray
 xray_299
 xray_300_420
 setup.sh
+logs*.csv
