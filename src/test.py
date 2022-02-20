@@ -48,11 +48,14 @@ model = models.inception_v3(pretrained=True)
 for param in model.parameters():
     param.requires_grad = False
 
-print(model)
-summary(model, input_size=(32, 3, 299, 299), col_names=(
-            "input_size",
-            "output_size",
-            "kernel_size",
-            # "num_params",
-            # "mult_adds",
-        ))
+# print(model)
+# summary(model, input_size=(32, 3, 299, 299), col_names=(
+#             "input_size",
+#             "output_size",
+#             "kernel_size",
+#             # "num_params",
+#             # "mult_adds",
+#         ))
+
+y = model(torch.ones(32, 3, 299, 299))
+print(y.logits)

@@ -13,7 +13,7 @@ from datamodules.simple_datamodule import SimpleDataModule
 with open('parameters.json') as f:
     params = json.load(f)
 
-c, h, w = 3, 299, 299
+c, h, w = 3, 300, 420
 
 # model = SequentialCNN(
 #     architecture_file=params['archi_file'],
@@ -58,9 +58,10 @@ trainer.save_checkpoint(model_save_file)
 archi_dir = 'archs'
 if not os.path.isdir(archi_dir):
     os.makedirs(archi_dir)
-archi_save_file = os.path.join(archi_dir, f'arch_v{version}.txt')
-with open(archi_save_file, 'w') as f:
-    print(model, file=f)
+archi_save_file = os.path.join(archi_dir, f'arch_v{version}.py')
+# with open(archi_save_file, 'w') as f:
+#     print(model, file=f)
+shutil.copy('src/models/transferer.py', archi_save_file)
 
 del params['archi_file']
 

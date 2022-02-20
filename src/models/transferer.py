@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 from torchinfo import summary
 import torchmetrics as tm
 import torchvision.models as models
+from torchvision.models.inception import InceptionOutputs
 
 from .utils.layers import make_layer
 
@@ -20,24 +21,24 @@ class Transferer(pl.LightningModule):
         self.learning_rate = learning_rate
         self.reg_lambda = reg_lambda
 
-        self.model = models.resnet152(pretrained=True)
+        self.model = models.inception_v3(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
         self.model.fc = nn.Sequential(
             nn.Linear(self.model.fc.in_features, 128),
             nn.ReLU(),
-            nn.Linear(128, 3)
+            nn.Linear(128, 2)
         )
 
         self.cross_entropy_loss = nn.CrossEntropyLoss()
 
         show_metrics = {
-            'F1': tm.F1Score(num_classes=3),
+            'F1': tm.F1Score(num_classes=2),
         }
         hide_metrics = {
-            'Acc': tm.Accuracy(num_classes=3),
-            'Precision': tm.Precision(num_classes=3),
-            'Recall': tm.Recall(num_classes=3),
+            'Acc': tm.Accuracy(num_classes=2),
+            'Precision': tm.Precision(num_classes=2),
+            'Recall': tm.Recall(num_classes=2),
             # 'CnfMat': tm.ConfusionMatrix(num_classes=3)  # can't log
         }
         self.train_shows = tm.MetricCollection(show_metrics, prefix='train')
@@ -54,6 +55,9 @@ class Transferer(pl.LightningModule):
     def common_step(self, batch, batch_idx, stage):
         x, y = batch
         logits = self(x)
+
+        if isinstance(logits, InceptionOutputs):
+            logits = logits.logits
 
         loss = self.cross_entropy_loss(logits, y)
         self.log(f'{stage}Loss', loss, prog_bar=False, on_epoch=True, on_step=False)
