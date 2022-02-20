@@ -21,7 +21,7 @@ class Transferer(pl.LightningModule):
         self.learning_rate = learning_rate
         self.reg_lambda = reg_lambda
 
-        self.model = models.inception_v3(pretrained=True)
+        self.model = models.resnet152(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
         self.model.fc = nn.Sequential(

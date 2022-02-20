@@ -13,7 +13,7 @@ from datamodules.simple_datamodule import SimpleDataModule
 with open('parameters.json') as f:
     params = json.load(f)
 
-c, h, w = 3, 300, 420
+c, h, w = 3, 299, 299
 
 # model = SequentialCNN(
 #     architecture_file=params['archi_file'],
