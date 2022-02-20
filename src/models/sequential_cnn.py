@@ -81,9 +81,9 @@ class SequentialCNN(pl.LightningModule):
 
 
 def main():
-    model = SequentialCNN(input_shape=(3, 32, 32))
+    model = SequentialCNN(input_shape=(3, 299, 299))
     print(model)
-    summary(model, input_size=(32, 3, 32, 32), col_names=(
+    summary(model, input_size=(32, 3, 299, 299), col_names=(
                 # "input_size",
                 "output_size",
                 "kernel_size",

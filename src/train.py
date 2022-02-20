@@ -5,7 +5,7 @@ import csv
 import os
 import shutil
 
-from models.sequential_cnn import SequentialCNN
+# from models.sequential_cnn import SequentialCNN
 from models.transferer import Transferer
 from datamodules.simple_datamodule import SimpleDataModule
 
@@ -21,10 +21,11 @@ c, h, w = 3, 299, 299
 #     learning_rate=params['learning_rate'],
 #     reg_lambda=params['lambda']
 # )
-model = Transferer(
-    learning_rate=params['learning_rate'],
-    reg_lambda=params['lambda']
-)
+# model = Transferer(
+#     learning_rate=params['learning_rate'],
+#     reg_lambda=params['lambda']
+# )
+model = Transferer.load_from_checkpoint('saved_models/model_v55.ckpt')
 print(model)
 summary(
     model,

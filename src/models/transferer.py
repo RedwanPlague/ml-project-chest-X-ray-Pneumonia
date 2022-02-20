@@ -21,24 +21,24 @@ class Transferer(pl.LightningModule):
         self.learning_rate = learning_rate
         self.reg_lambda = reg_lambda
 
-        self.model = models.resnet152(pretrained=True)
+        self.model = models.resnet50(pretrained=True)
         for param in self.model.parameters():
             param.requires_grad = False
         self.model.fc = nn.Sequential(
             nn.Linear(self.model.fc.in_features, 128),
             nn.ReLU(),
-            nn.Linear(128, 2)
+            nn.Linear(128, 3)
         )
 
         self.cross_entropy_loss = nn.CrossEntropyLoss()
 
         show_metrics = {
-            'F1': tm.F1Score(num_classes=2),
+            'F1': tm.F1Score(num_classes=3),
         }
         hide_metrics = {
-            'Acc': tm.Accuracy(num_classes=2),
-            'Precision': tm.Precision(num_classes=2),
-            'Recall': tm.Recall(num_classes=2),
+            'Acc': tm.Accuracy(num_classes=3),
+            'Precision': tm.Precision(num_classes=3),
+            'Recall': tm.Recall(num_classes=3),
             # 'CnfMat': tm.ConfusionMatrix(num_classes=3)  # can't log
         }
         self.train_shows = tm.MetricCollection(show_metrics, prefix='train')

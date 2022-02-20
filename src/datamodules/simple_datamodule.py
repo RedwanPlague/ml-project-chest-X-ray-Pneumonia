@@ -18,7 +18,7 @@ def get_data(stage):
         ddir = os.path.join(DIR, stage, cls)
         dlist = [os.path.join(ddir, file) for file in os.listdir(ddir)]
         img_names += dlist
-        labels += [0 if cls == 'normal' else 1] * len(dlist)
+        labels += [i] * len(dlist)
     return img_names, labels
 
 
