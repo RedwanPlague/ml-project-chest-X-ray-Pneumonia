@@ -42,11 +42,11 @@ from torchinfo import summary
 # x, y = get_data('train')
 # print(len(x), len(y))
 
-import torchvision.models as models
+# import torchvision.models as models
 
-model = models.inception_v3(pretrained=True)
-for param in model.parameters():
-    param.requires_grad = False
+# model = models.inception_v3(pretrained=True)
+# for param in model.parameters():
+#     param.requires_grad = False
 
 # print(model)
 # summary(model, input_size=(32, 3, 299, 299), col_names=(
@@ -57,5 +57,22 @@ for param in model.parameters():
 #             # "mult_adds",
 #         ))
 
-y = model(torch.ones(32, 3, 299, 299))
-print(y.logits)
+# y = model(torch.ones(32, 3, 299, 299))
+# print(y.logits)
+
+from pytorch_lightning import Trainer
+from models.transferer import Transferer
+from datamodules.simple_datamodule import SimpleDataModule
+
+model = Transferer.load_from_checkpoint('saved_models/model_v25.ckpt')
+
+dm = SimpleDataModule(batch_size=64)
+
+trainer = Trainer(
+    # max_epochs=params['max_epochs'],
+    # gpus=-1,
+    # benchmark=True,
+)
+
+metrics = trainer.test(model, dm)
+print(metrics)
